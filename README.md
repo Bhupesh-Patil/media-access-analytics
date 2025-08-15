@@ -56,23 +56,28 @@ This project is a backend microservice for managing media (audio/video) uploads,
 
 2. Create a virtual environment:
 
+    ```bash
     python -m venv venv
 
 3. Activate the environment:
 
+    ```bash
     source venv/bin/activate  ## Linux/Mac
     venv\Scripts\activate     ## Windows
 
 4. Install dependencies:
 
+    ```bash
     pip install -r requirements.txt
 
 5. Run the server:
 
+    ```bash
     uvicorn main:app --reload
 
 6. Testing:
 
+    ```bash
     pytest
 
 ## Notes & Pro Tips
