@@ -10,7 +10,11 @@ This project is a backend microservice for managing media (audio/video) uploads,
 
  **User Authentication**: Admin users can sign up and log in via JWT-based authentication.
  **Media Management**: Upload media metadata and generate secure stream URLs.
- **Analytics**: Track who views media, when, and from where (future tasks).
+ **Analytics**: Track who views media, when, and from where. Provides:
+
+- Total views per media
+- Unique IP count
+- Daily views breakdown
  **Secure Routes**: All protected routes require a valid JWT token.
 
 ---
@@ -36,13 +40,28 @@ This project is a backend microservice for managing media (audio/video) uploads,
 
 ### Authentication
 
- `POST /auth/signup` → Create a new admin user
- `POST /auth/login` → Login and get JWT token
+-`POST /auth/signup` → Create a new admin user
+-`POST /auth/login` → Login and get JWT token
 
 ### Media
 
- `POST /media/media/` → Add media metadata (authenticated)
- `GET /media/media/{id}/stream-url` → Get secure streaming URL
+-`POST /media/` → Add media metadata (authenticated)  
+-`GET /media/{id}/stream-url` → Get secure streaming URL (authenticated)  
+-`POST /media/{id}/view` → Log a media view (authenticated)  
+-`GET /media/{id}/analytics` → Get analytics for a media (authenticated)
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description | Example Request | Example Response |
+|--------|----------|-------------|-----------------|----------------|
+| POST | `/auth/signup` | Create a new admin user | `{ "email": "admin@example.com", "password": "pass123" }` | `{ "message": "User created" }` |
+| POST | `/auth/login` | Login and get JWT token | `{ "email": "admin@example.com", "password": "pass123" }` | `{ "token": "eyJhbGciOiJIUzI..." }` |
+| POST | `/media/` | Add media metadata (authenticated) | `{ "title": "Sample Media", "type": "video", "file_url": "http://example.com/sample.mp4" }` | `{ "id": 1, "title": "Sample Media", "type": "video", "file_url": "http://example.com/sample.mp4" }` |
+| GET | `/media/{id}/stream-url` | Get secure streaming URL (authenticated) | - | `{ "stream_url": "http://example.com/sample.mp4" }` |
+| POST | `/media/{id}/view` | Log a media view (authenticated) | - | `{ "message": "View logged for media 1 from IP 127.0.0.1" }` |
+| GET | `/media/{id}/analytics` | Get media analytics (authenticated) | - | `{ "total_views": 1, "unique_ips": 1, "views_per_day": { "2025-08-15": 1 } }` |
 
 ---
 
@@ -80,22 +99,24 @@ This project is a backend microservice for managing media (audio/video) uploads,
     ```bash
     pytest
 
+---
+
 ## Notes & Pro Tips
 
-JWT Security: Keep your secret keys safe and never commit them to GitHub. Use .env files for sensitive data.
+**JWT Security**: Keep your secret keys safe and never commit them to GitHub. Use `.env` files for sensitive data.  
+**API Documentation**: FastAPI provides auto-generated docs at `/docs` and `/redoc`.  
+**Error Handling**: Ensure proper error responses for missing media, invalid tokens, or other edge cases.  
+**Analytics & JWT Security**:  
 
-API Documentation: FastAPI provides auto-generated docs at /docs and /redoc.
-
-Error Handling: Ensure proper error responses for missing media or invalid tokens.
-
-Analytics: Future tasks involve logging IPs and timestamps for media views.
-
-Professional Documentation: Clear READMEs and proper code comments make your project stand out.
-
-Version Control: Commit small, logical changes and push frequently to GitHub for easy tracking.
+- All media routes require a valid JWT token.  
+- `POST /media/{id}/view` logs the viewer's IP and timestamp.  
+- `GET /media/{id}/analytics` returns total views, unique IPs, and daily breakdown.  
+**Professional Documentation**: Clear READMEs and proper code comments make your project stand out.  
+**Version Control**: Commit small, logical changes and push frequently to GitHub for easy tracking.  
+**Testing**: Use FastAPI TestClient or Swagger UI to verify all endpoints after any update.  
 
 ---
 
 ## Submission Note
 
-This project has been completed as part of the Media Access & Analytics Platform simulation. All tasks for Step 1 have been implemented, tested, and verified. The GitHub repository link has been submitted as the official deliverable.
+This project has completed Task 2: Media access logging and analytics with JWT-secured endpoints. All features have been tested with FastAPI docs and verified.

@@ -1,6 +1,10 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Dict
 
+# -------------------------
+# Admin User Schemas
+# -------------------------
 class AdminUserCreate(BaseModel):
     email: EmailStr
     password: str
@@ -9,6 +13,9 @@ class AdminUserLogin(BaseModel):
     email: EmailStr
     password: str
 
+# -------------------------
+# Media Asset Schemas
+# -------------------------
 class MediaAssetCreate(BaseModel):
     title: str
     type: str
@@ -23,3 +30,11 @@ class MediaAssetResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+# -------------------------
+# Media Analytics Schemas
+# -------------------------
+class MediaAnalyticsResponse(BaseModel):
+    total_views: int
+    unique_ips: int
+    views_per_day: Dict[str, int]  # date string → view count
