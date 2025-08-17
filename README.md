@@ -119,4 +119,30 @@ This project is a backend microservice for managing media (audio/video) uploads,
 
 ## Submission Note
 
-This project has completed Task 2: Media access logging and analytics with JWT-secured endpoints. All features have been tested with FastAPI docs and verified.
+This project implements the backend for a **Media Access & Analytics Platform**, simulating a microservice that allows admin users to upload media (audio/video), generate secure streaming links, and track analytics.
+
+The project is divided into **three tasks**:
+
+**Task 1: Project Setup & Secure Media Upload**  
+
+- Scaffolding the backend with FastAPI.  
+- User authentication using JWT.  
+- Database schemas for `MediaAsset`, `AdminUser`, and `MediaViewLog`.  
+- Protected APIs for media upload and secure streaming links.
+
+**Task 2: Media View Tracking & Analytics**  
+
+- Logging user activity (IP + timestamp) via `POST /media/:id/view`.  
+- Analytics aggregation via `GET /media/:id/analytics`.  
+- All routes secured with JWT.  
+- Edge cases like missing media or invalid tokens handled gracefully.
+
+**Task 3: Optimization & Security**  
+
+- Redis caching for analytics endpoints.  
+- Rate limiting on view logging endpoints to prevent abuse.  
+- Automated tests using PyTest.  
+- Dockerized project with `.env.example` for configuration.  
+- Updated README with setup instructions and project overview.
+
+All features have been tested and verified, demonstrating **performance, security, and production-readiness** for a real-world backend service.

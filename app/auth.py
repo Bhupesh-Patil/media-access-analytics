@@ -1,43 +1,43 @@
+# app/auth.py
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Generator
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
-from . import models, schemas, database
 from sqlalchemy.orm import Session
 
-# -----------------------------
-# JWT Configuration
-# -----------------------------
-SECRET_KEY = "your_secret_key_here"  # Change this to a secure random key
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+import os
+from dotenv import load_dotenv
+
+from . import models, schemas, database
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("JWT_SECRET", "your_secret_key")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 router = APIRouter()
 
-# -----------------------------
-# Utility Functions
-# -----------------------------
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     db = database.SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-def get_password_hash(password: str):
+def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
-def verify_password(plain_password, hashed_password):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
@@ -59,10 +59,8 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
 
-# -----------------------------
 # Routes
-# -----------------------------
-@router.post("/auth/signup")
+@router.post("/signup")
 def signup(user: schemas.AdminUserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.AdminUser).filter(models.AdminUser.email == user.email).first()
     if db_user:
@@ -75,7 +73,7 @@ def signup(user: schemas.AdminUserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return {"message": "User created"}
 
-@router.post("/auth/login")
+@router.post("/login")
 def login(user: schemas.AdminUserLogin, db: Session = Depends(get_db)):
     db_user = db.query(models.AdminUser).filter(models.AdminUser.email == user.email).first()
     if not db_user or not verify_password(user.password, db_user.hashed_password):
